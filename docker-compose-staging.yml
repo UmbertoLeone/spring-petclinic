@@ -103,6 +103,8 @@ services:
     container_name: promtail-staging
     user: "0:0"
     restart: always
+    environment:
+      - PETCLINIC_ENV=staging
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/containers:/var/lib/docker/containers:ro

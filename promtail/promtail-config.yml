@@ -15,10 +15,12 @@ scrape_configs:
         refresh_interval: 5s
     relabel_configs:
       - source_labels: [__meta_docker_container_name]
-        regex: '/(.*petclinic.*)'
+        regex: '/(.*petclinic-${PETCLINIC_ENV}.*)'
         action: keep
       - source_labels: [__meta_docker_container_name]
         regex: '/(.*)'
         target_label: container
+      - target_label: environment
+        replacement: ${PETCLINIC_ENV}
       - target_label: job
         replacement: petclinic-logs
