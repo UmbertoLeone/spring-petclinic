@@ -1,12 +1,12 @@
 services:
   postgres:
     image: postgres:18.4
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_DB=petclinic
       - POSTGRES_USER=petclinic
       - POSTGRES_PASSWORD=petclinic
+    volumes:
+      - petclinic-postgres-data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U petclinic -d petclinic"]
       interval: 5s
@@ -14,11 +14,8 @@ services:
       retries: 5
 
   ms-vets-owners:
-    build:
-      context: ./ms-vets-owners
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
+    image: ghcr.io/umbertoleone/spring-petclinic-ms-vets-owners:staging
+    pull_policy: always
     environment:
       - SPRING_PROFILES_ACTIVE=postgres
       - POSTGRES_URL=jdbc:postgresql://postgres:5432/petclinic
@@ -29,11 +26,8 @@ services:
         condition: service_healthy
 
   ms-visits:
-    build:
-      context: ./ms-visits
-      dockerfile: Dockerfile
-    ports:
-      - "8082:8082"
+    image: ghcr.io/umbertoleone/spring-petclinic-ms-visits:staging
+    pull_policy: always
     environment:
       - SPRING_PROFILES_ACTIVE=postgres
       - POSTGRES_URL=jdbc:postgresql://postgres:5432/petclinic
@@ -46,11 +40,8 @@ services:
         condition: service_started
 
   ms-core-ui:
-    build:
-      context: ./ms-core-ui
-      dockerfile: Dockerfile
-    ports:
-      - "8083:8083"
+    image: ghcr.io/umbertoleone/spring-petclinic-ms-core-ui:staging
+    pull_policy: always
     environment:
       - SPRING_PROFILES_ACTIVE=postgres
       - POSTGRES_URL=jdbc:postgresql://postgres:5432/petclinic
@@ -63,11 +54,10 @@ services:
       - ms-visits
 
   api-gateway:
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
+    image: ghcr.io/umbertoleone/spring-petclinic-api-gateway:staging
+    pull_policy: always
     ports:
-      - "8080:8080"
+      - "8086:8080"
     environment:
       - MS_VETS_OWNERS_URL=http://ms-vets-owners:8081
       - MS_VISITS_URL=http://ms-visits:8082
@@ -75,37 +65,52 @@ services:
     depends_on:
       - ms-core-ui
 
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: always
-    ports:
-      - "9000:9000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-
   prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
+    image: ghcr.io/umbertoleone/spring-petclinic-prometheus:staging
+    pull_policy: always
+    container_name: prometheus-staging
     restart: always
-    ports:
-      - "9090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - petclinic-prometheus-data:/prometheus
 
   grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
+    image: ghcr.io/umbertoleone/spring-petclinic-grafana:staging
+    pull_policy: always
+    container_name: grafana-staging
     restart: always
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/jvm-micrometer.json
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning
+      - petclinic-grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
 
+  loki:
+    image: ghcr.io/umbertoleone/spring-petclinic-loki:staging
+    pull_policy: always
+    container_name: loki-staging
+    user: "0:0"
+    restart: always
+    volumes:
+      - petclinic-loki-data:/tmp/loki
+
+  promtail:
+    image: ghcr.io/umbertoleone/spring-petclinic-promtail:staging
+    pull_policy: always
+    container_name: promtail-staging
+    user: "0:0"
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      - loki
+
 volumes:
-  portainer_data:
+  petclinic-postgres-data:
+  petclinic-prometheus-data:
+  petclinic-grafana-data:
+  petclinic-loki-data:

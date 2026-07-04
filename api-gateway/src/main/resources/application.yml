@@ -1,0 +1,55 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: ms-vets-owners
+              uri: ${MS_VETS_OWNERS_URL:http://ms-vets-owners:8081}
+              predicates:
+                - name: Path
+                  args:
+                    patterns:
+                      - /api/owners/**
+                      - /api/vets/**
+                      - /api/petTypes/**
+            - id: ms-visits
+              uri: ${MS_VISITS_URL:http://ms-visits:8082}
+              predicates:
+                - name: Path
+                  args:
+                    patterns:
+                      - /api/visits/**
+                      - /api/pets/*/visits/**
+            - id: ms-core-ui
+              uri: ${MS_CORE_UI_URL:http://ms-core-ui:8083}
+              predicates:
+                - name: Path
+                  args:
+                    patterns:
+                      - /**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,gateway
+  endpoint:
+    gateway:
+      access: unrestricted
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.http.server.reactive: DEBUG
+    org.springframework.web: DEBUG
