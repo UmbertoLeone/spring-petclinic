@@ -29,8 +29,11 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Run Unit Tests
+        run: ./mvnw clean test
+
       - name: Build and Package Microservices
-        run: ./mvnw clean package
+        run: ./mvnw package -DskipTests
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
