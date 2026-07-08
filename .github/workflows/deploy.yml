@@ -30,7 +30,7 @@ jobs:
           cache: 'maven'
 
       - name: Build and Package Microservices
-        run: ./mvnw clean package -DskipTests
+        run: ./mvnw clean package
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
