@@ -58,6 +58,8 @@ services:
       - POSTGRES_PASS=petclinic
       - MS_VETS_OWNERS_URL=http://ms-vets-owners:8081
       - MS_VISITS_URL=http://ms-visits:8082
+      - SERVER_FORWARD_HEADERS_STRATEGY=framework
+      - SERVER_SERVLET_SESSION_TRACKING_MODES=cookie
     depends_on:
       - ms-vets-owners
       - ms-visits
@@ -72,6 +74,7 @@ services:
       - MS_VETS_OWNERS_URL=http://ms-vets-owners:8081
       - MS_VISITS_URL=http://ms-visits:8082
       - MS_CORE_UI_URL=http://ms-core-ui:8083
+      - SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_TRUSTED_PROXIES=.*
     depends_on:
       - ms-core-ui
 

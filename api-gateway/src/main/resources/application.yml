@@ -8,6 +8,7 @@ spring:
     gateway:
       server:
         webflux:
+          trusted-proxies: ".*"
           routes:
             - id: ms-vets-owners
               uri: ${MS_VETS_OWNERS_URL:http://ms-vets-owners:8081}
