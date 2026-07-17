@@ -256,11 +256,11 @@ Ho eseguito prove di funzionamento per confermare la correttezza del flusso dei 
 2. Aprire la Dashboard JVM.
 3. Verificare che Prometheus stia effettuando lo scrape in tempo reale.
 
-> <!-- INSERIRE GIF -->
+![Dashboard Grafana](docs/images/grafana.gif)
 
 4. Verifica che Loki stia raccogliendo i log.
 
-> <!-- INSERIRE GIF -->
+![Loki Logs](docs/images/loki.gif)
 
 ### 9.3 Scenario 3: Validazione Animali Duplicati (Regola di Business)
 Ho testato la robustezza del sistema a livello di validazione della business logic provando ad inserire due animali con lo stesso nome per lo stesso proprietario.
@@ -270,7 +270,7 @@ Ho testato la robustezza del sistema a livello di validazione della business log
 4. Compilare i restanti dati della scheda e tentare l'invio.
 5. Verificare che il controller (`PetController`) intercetti il duplicato bloccando l'inserimento in database e restituendo all'utente il messaggio d'errore a schermo: *"is already in use"*.
 
-> <!-- INSERIRE GIF -->
+![Validazione Animale Duplicato](docs/images/duplicated_animal.gif)
 
 ---
 
