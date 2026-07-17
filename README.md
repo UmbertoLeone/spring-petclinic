@@ -282,7 +282,7 @@ Ho voluto verificare la robustezza della segmentazione di rete simulando tentati
 *   **Scenario di attacco:** Un client malintenzionato tenta di bypassare l'api-gateway inviando chiamate HTTP dirette a `ms-visits` sulla porta `8082` o a `ms-vets-owners` sulla porta `8081`.
 *   **Comando eseguito:**
     ```bash
-    curl -I http://eds.umbertoleone.it:8082/api/visits
+    curl -I https://eds.umbertoleone.it:8082/api/visits
     ```
 *   **Risultato:** Connessione rifiutata (Timeout / Porta Chiusa). Essendo le porte non mappate sull'host negli ambienti VPS, l'accesso è fisicamente negato per chiunque sia esterno alla rete Docker.
 
